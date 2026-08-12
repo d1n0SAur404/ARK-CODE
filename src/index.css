@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ====== 明日方舟猜角色 · 双主题设计系统 ====== */
+
+:root {
+  /* 浅色主题（默认） */
+  --color-bg: #f0ece4;
+  --color-surface: #ffffff;
+  --color-card: #ffffff;
+  --color-card-hover: #faf8f3;
+  --color-border: #d9d4c7;
+  --color-border-strong: #c4bdab;
+  --color-text: #1a1b23;
+  --color-text-secondary: #4a4b55;
+  --color-muted: #8a8a9a;
+
+  --color-primary: #b8860b;
+  --color-primary-hover: #a07608;
+  --color-primary-light: rgba(184, 134, 11, 0.1);
+
+  --color-accent: #2a6db5;
+  --color-accent-hover: #225a98;
+  --color-accent-light: rgba(42, 109, 181, 0.1);
+
+  --color-success: #3d8c3d;
+  --color-success-light: rgba(61, 140, 61, 0.1);
+
+  --color-warning: #c8b400;
+  --color-warning-light: rgba(200, 180, 0, 0.12);
+
+  --color-danger: #c44844;
+  --color-danger-light: rgba(196, 72, 68, 0.1);
+
+  /* 特殊效果 — 浅色主题用蓝色系发光，对比度更高 */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(42, 109, 181, 0.3), 0 0 8px rgba(42, 109, 181, 0.15);
+  --color-glow: rgba(42, 109, 181, 0.4);
+  --color-glow-fade: rgba(42, 109, 181, 0);
+}
+
+.dark {
+  /* 深色主题 */
+  --color-bg: #0a0a0f;
+  --color-surface: #131419;
+  --color-card: #1a1b23;
+  --color-card-hover: #21222c;
+  --color-border: #2a2b35;
+  --color-border-strong: #3a3b45;
+  --color-text: #e8e8e8;
+  --color-text-secondary: #b0b0c0;
+  --color-muted: #7a7a8a;
+
+  --color-primary: #d4a574;
+  --color-primary-hover: #e0b584;
+  --color-primary-light: rgba(212, 165, 116, 0.12);
+
+  --color-accent: #4a90d9;
+  --color-accent-hover: #5aa0e9;
+  --color-accent-light: rgba(74, 144, 217, 0.12);
+
+  --color-success: #5cb85c;
+  --color-success-light: rgba(92, 184, 92, 0.12);
+
+  --color-warning: #f0ad4e;
+  --color-warning-light: rgba(240, 173, 78, 0.12);
+
+  --color-danger: #e05a56;
+  --color-danger-light: rgba(224, 90, 86, 0.12);
+
+  /* 特殊效果 — 深色主题用金色发光 */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 24px rgba(212, 165, 116, 0.3), 0 0 8px rgba(212, 165, 116, 0.15);
+  --color-glow: rgba(212, 165, 116, 0.4);
+  --color-glow-fade: rgba(212, 165, 116, 0);
+}
+
+/* ====== 全局基础样式 ====== */
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC',
+      'Microsoft YaHei', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* 滚动条 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted);
+  }
+}
+
+/* ====== 可复用组件类 ====== */
+
+@layer components {
+  /* 卡片 */
+  .ark-card {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease, transform 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .ark-card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* 输入框 */
+  .ark-input {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .ark-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+  }
+
+  /* 渐变文字 */
+  .ark-text-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary),
+      var(--color-accent)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 玻璃效果 */
+  .ark-glass {
+    background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* ====== 动画 ====== */
+
+@keyframes ark-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ark-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--color-glow);
+  }
+  50% {
+    box-shadow: 0 0 0 8px var(--color-glow-fade);
+  }
+}
+
+@keyframes ark-fade-in-demo {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.ark-fade-in {
+  animation: ark-fade-in 0.3s ease-out;
+}
+
+.ark-pulse {
+  animation: ark-pulse-glow 2s infinite;
+}
+
+/* 猜测日志淡入动画 */
+@keyframes draw-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-draw-fade {
+  animation: draw-fade-in 0.25s ease-out both;
+}
+
+/* 演示用：循环淡入淡出 */
+.ark-fade-in-demo {
+  animation: ark-fade-in-demo 3s ease-in-out infinite;
+}

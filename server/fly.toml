@@ -1,34 +1,32 @@
-# ============================================
-# Fly.io 配置 — ARK CODE Server
-# 部署命令: fly deploy
-# ============================================
-
-app = "arkcode-server"
-primary_region = "hkg"  # 香港，對中國大陸最優
+app = "arkguess-server"
+primary_region = "hkg"
 
 [build]
-  dockerfile = "Dockerfile"
+  image = "node:22-alpine"
 
 [env]
+  PORT = "8080"
   NODE_ENV = "production"
-  PORT = "3000"
+  HOST = "0.0.0.0"
+  CORS_ORIGIN = "true"
 
-[http_service]
-  internal_port = 3000
-  force_https = true
-  auto_stop_machines = false
-  auto_start_machines = true
-  min_machines_running = 1
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
 
-  [[http_service.checks]]
-    interval = "30s"
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.http_checks]]
+    interval = "15s"
     timeout = "5s"
-    grace_period = "10s"
-    method = "GET"
+    method = "get"
     path = "/health"
-
-# 扩展到 2 实例时取消注释
-# [http_service.concurrency]
-#   type = "connections"
-#   hard_limit = 250
-#   soft_limit = 200
+    grace_period = "10s"

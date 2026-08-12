@@ -1,8 +1,11 @@
 services:
   - type: web
     name: arkguess-server
-    runtime: image
-    dockerfilePath: server/Dockerfile
+    runtime: docker
+    repo: https://github.com/d1n0SAur404/ARK-CODE
+    plan: free
+    rootDir: server
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: NODE_ENV
         value: production

@@ -1,0 +1,41 @@
+# Docker Compose — ARK CODE 开发数据库
+# 启动: docker compose up -d
+# 停止: docker compose down
+# 清除: docker compose down -v
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: arkcode-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arkcode
+      POSTGRES_PASSWORD: arkcode123
+      POSTGRES_DB: arkcode
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arkcode -d arkcode"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: arkcode-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  redisdata:

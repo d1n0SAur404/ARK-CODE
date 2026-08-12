@@ -1,0 +1,281 @@
+// ============================================
+// ARK CODE — Prisma Schema (SQLite 本地开发 / PostgreSQL 上线)
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// 用户 & 认证
+// ============================================
+
+model User {
+  id           String         @id @default(cuid())
+  username     String         @unique
+  email        String         @unique
+  passwordHash String         @map("password_hash")
+  avatar      String?
+  bio         String?
+  gender      Gender         @default(OTHER)
+  points      Int            @default(1000)
+  role        UserRole       @default(USER)
+  isVerified  Boolean        @default(false) @map("is_verified")
+  lastLoginAt DateTime?      @map("last_login_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  isBanned    Boolean        @default(false) @map("is_banned")
+  banReason   String?        @map("ban_reason")
+
+  sessions         Session[]
+  oauthAccounts    OAuthAccount[]
+  gameRecords      GameRecord[]
+  achievements     UserAchievement[]
+  roomPlayers      RoomPlayer[]
+  hostedRooms      Room[]          @relation("Host")
+  dailyChallenges  DailyChallenge[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  ip        String?
+  userAgent String?  @map("user_agent")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+model OAuthAccount {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  provider     String
+  providerId    String   @map("provider_id")
+  providerEmail String?  @map("provider_email")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerId])
+  @@index([userId])
+  @@map("oauth_accounts")
+}
+
+// ============================================
+// 游戏记录
+// ============================================
+
+model GameRecord {
+  id          String      @id @default(cuid())
+  userId      String      @map("user_id")
+  mode        GameMode
+  difficulty  Difficulty
+  result      GameResult
+  targetId    String?     @map("target_id")
+  guessCount  Int         @map("guess_count") @default(0)
+  timeSpent   Int?        @map("time_spent")
+  shareGrid   String?     @map("share_grid")
+  playedAt    DateTime    @default(now()) @map("played_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([playedAt])
+  @@index([mode])
+  @@map("game_records")
+}
+
+model UserAchievement {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  achievement String
+  unlockedAt  DateTime  @default(now()) @map("unlocked_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievement])
+  @@index([userId])
+  @@map("user_achievements")
+}
+
+// ============================================
+// 多人联机房间 (Task #24)
+// ============================================
+
+model Room {
+  id          String     @id @default(cuid())
+  code        String     @unique           // 6 位房间码
+  hostId      String     @map("host_id")
+  status      RoomStatus @default(WAITING)
+  maxPlayers  Int        @default(4)       @map("max_players")
+  mode        GameMode
+  difficulty  Difficulty
+  roundCount  Int        @default(0)       @map("round_count")
+  startedAt   DateTime?  @map("started_at")
+  finishedAt  DateTime?  @map("finished_at")
+  createdAt   DateTime   @default(now()) @map("created_at")
+
+  host    User         @relation("Host", fields: [hostId], references: [id], onDelete: Cascade)
+  players RoomPlayer[]
+
+  @@index([code])
+  @@index([status])
+  @@map("rooms")
+}
+
+model RoomPlayer {
+  id        String    @id @default(cuid())
+  roomId    String    @map("room_id")
+  userId    String    @map("user_id")
+  score     Int       @default(0)
+  isReady   Boolean   @default(false) @map("is_ready")
+  joinedAt  DateTime  @default(now()) @map("joined_at")
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+  @@index([userId])
+  @@map("room_players")
+}
+
+// ============================================
+// 每日挑战 (Task #25)
+// ============================================
+
+model DailyChallenge {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  date        String                        // YYYY-MM-DD
+  targetId    String    @map("target_id")   // 当天目标干员 key
+  result      GameResult
+  guessCount  Int       @map("guess_count") @default(0)
+  timeSpent   Int?      @map("time_spent")
+  completedAt DateTime  @default(now()) @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([date])
+  @@map("daily_challenges")
+}
+
+// ============================================
+// 干员 (Task #26)
+// ============================================
+
+model Operator {
+  id             String  @id @default(cuid())
+  name           String  @unique
+  codename       String?                       // 英文名
+  rarity         Int
+  profession     String
+  subProfession  String?  @map("sub_profession")
+  race           String?
+  birthplace     String?
+  faction        String?
+  nation         String?
+  combatExperience String? @map("combat_experience")
+  oripathy       String?
+  isAlter        Boolean  @default(false) @map("is_alter")
+  alterOf        String?  @map("alter_of")    // 本体名称（异格干员）
+
+  @@index([name])
+  @@index([rarity])
+  @@index([profession])
+  @@map("operators")
+}
+
+// ============================================
+// 枚举
+// ============================================
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum GameMode {
+  DAILY
+  ENDLESS
+  TIMED
+  MULTIPLAYER
+  DRAW_GUESS
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum GameResult {
+  WIN
+  LOSS
+  GIVE_UP
+}
+
+enum RoomStatus {
+  WAITING
+  PLAYING
+  FINISHED
+}
+
+// ============================================
+// 论坛帖子
+// ============================================
+
+model ForumPost {
+  id        Int      @id @default(autoincrement())
+  author    String
+  avatar    String   @default("👤")
+  title     String
+  content   String
+  likes     Int      @default(0)
+  isPinned  Boolean  @default(false) @map("is_pinned")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  comments  ForumComment[]
+
+  @@map("forum_posts")
+}
+
+// ============================================
+// 论坛评论
+// ============================================
+
+model ForumComment {
+  id       Int       @id @default(autoincrement())
+  postId   Int       @map("post_id")
+  author   String
+  avatar   String    @default("👤")
+  content  String
+  createdAt DateTime @default(now())
+  post     ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("forum_comments")
+}

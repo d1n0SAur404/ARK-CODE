@@ -23,7 +23,8 @@ const COLOR_MAP: Record<string, string> = {
 const DIFFICULTIES: Difficulty[] = ['easy','medium','hard']
 
 // WebSocket 地址
-const WS_URL = import.meta.env.VITE_WS_URL || (import.meta.env.PROD ? 'wss://' + window.location.host + '/ws' : 'ws://' + window.location.host + '/ws-game')
+const API_BASE = import.meta.env.VITE_API_URL || ''
+const WS_URL = import.meta.env.VITE_WS_URL || (API_BASE ? `${API_BASE.replace(/^https?/, 'wss')}/ws` : (import.meta.env.PROD ? 'wss://' + window.location.host + '/ws' : 'ws://' + window.location.host + '/ws-game'))
 
 export default function MultiplayerRoomPage() {
   const nav = useNavigate()
@@ -296,7 +297,6 @@ export default function MultiplayerRoomPage() {
               </CardBody>
             </Card>
           </div>
-          <p className="text-center text-xs text-ark-muted">提示：需要先启动后端服务（npm run dev），联机需要同一网络下的多台电脑</p>
         </div>
       )}
 

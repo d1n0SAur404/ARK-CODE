@@ -42,6 +42,11 @@ export async function wsRoutes(app: FastifyInstance) {
       try { msg = JSON.parse(raw.toString()) } catch { return }
 
       switch (msg.type) {
+        case 'ping': {
+          send(socket, { type: 'pong' })
+          break
+        }
+
         case 'room:create': {
           const room = createRoom(session.userId, session.username, msg.avatar || '')
           session.roomCode = room.code

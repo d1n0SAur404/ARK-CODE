@@ -174,7 +174,18 @@ export const useAuthStore = create<AuthState>()(
         try {
           const data = await api<any>('/api/auth/register', { method: 'POST', body: JSON.stringify({ username, email, password }) })
           localStorage.setItem('arkcode-token', data.token)
-          set({ isAuthed: true, token: data.token, user: data.user })
+          set({
+            isAuthed: true,
+            token: data.token,
+            user: {
+              username: data.user.username,
+              email: data.user.email || '',
+              gender: data.user.gender || '',
+              avatar: data.user.avatar || '',
+              bio: data.user.bio || '',
+              points: data.user.points || 0,
+            },
+          })
           return true
         } catch { return false }
       },

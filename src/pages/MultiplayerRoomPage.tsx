@@ -72,8 +72,18 @@ export default function MultiplayerRoomPage() {
     const ws = new WebSocket(`${WS_URL}?token=${token}`)
     socketRef.current = ws
 
-    ws.onopen = () => setConnected(true)
-    ws.onclose = () => setConnected(false)
+    let heartbeat: ReturnType<typeof setInterval> | null = null
+    ws.onopen = () => {
+      setConnected(true)
+      // 心跳：每 25 秒发一次 ping，防止网关空闲超时断开
+      heartbeat = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'ping' }))
+      }, 25000)
+    }
+    ws.onclose = () => {
+      setConnected(false)
+      if (heartbeat) clearInterval(heartbeat)
+    }
     ws.onerror = () => {}
     ws.onmessage = (e) => {
       let msg: any
@@ -177,7 +187,7 @@ export default function MultiplayerRoomPage() {
       }
     }
 
-    return () => { ws.close() }
+    return () => { if (heartbeat) clearInterval(heartbeat); ws.close() }
   }, [isAuthed])
 
   function send(msg: object) {

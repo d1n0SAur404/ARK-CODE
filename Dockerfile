@@ -5,7 +5,7 @@
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY server/package.json server/package-lock.json ./
-RUN npm config set registry https://mirrors.cloud.tencent.com/npm/ && npm install
+RUN npm config set registry https://mirrors.cloud.tencent.com/npm/ && npm install --omit=dev --ignore-scripts
 
 # ---- 运行阶段 ----
 FROM node:22-alpine AS runner

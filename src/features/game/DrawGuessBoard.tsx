@@ -7,7 +7,8 @@ import { OperatorInput } from './OperatorInput'
 import { Button, Card, CardBody, CardHeader, Badge, Input } from '@components/ui'
 import clsx from 'clsx'
 
-const WS_URL = import.meta.env.PROD ? `wss://${window.location.host}/ws-draw` : `ws://${window.location.host}/ws-game-draw`
+const API_BASE = import.meta.env.VITE_API_URL || ''
+const WS_URL = API_BASE ? `${API_BASE.replace(/^https?/, 'wss')}/ws-draw` : (import.meta.env.PROD ? `wss://${window.location.host}/ws-draw` : `ws://${window.location.host}/ws-game-draw`)
 const PALETTE = ['#ffffff','#c0c0c0','#808080','#404040','#000000','#ff4444','#ff8844','#ffcc44','#ffff44','#88ff44','#44ff44','#44ff88','#44ffcc','#44ffff','#44ccff','#4488ff','#4444ff','#8844ff','#cc44ff','#ff44cc','#ff4488','#8b4513','#d2691e','#daa520']
 
 interface RoomPlayer { userId: string; username: string; avatar: string; ready: boolean; score: number; isMe: boolean }
@@ -54,8 +55,15 @@ export function DrawGuessBoard() {
     if (!token) { setError('请先登录'); return }
     const ws = new WebSocket(`${WS_URL}?token=${token}`)
     socketRef.current = ws
-    ws.onopen = () => setConnected(true)
-    ws.onclose = () => setConnected(false)
+    let heartbeat: ReturnType<typeof setInterval> | null = null
+    ws.onopen = () => {
+      setConnected(true)
+      // 心跳：每 25 秒发一次 ping，防止网关空闲超时断开
+      heartbeat = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'ping' }))
+      }, 25000)
+    }
+    ws.onclose = () => { setConnected(false); if (heartbeat) clearInterval(heartbeat) }
     ws.onerror = () => setError('连接服务器失败')
     ws.onmessage = (e) => {
       let msg: any; try { msg = JSON.parse(e.data) } catch { return }
@@ -93,7 +101,7 @@ export function DrawGuessBoard() {
         case 'error': setError(msg.message); break
       }
     }
-    return () => ws.close()
+    return () => { if (heartbeat) clearInterval(heartbeat); ws.close() }
   }, [isAuthed])
 
   function send(msg: object) { socketRef.current?.send(JSON.stringify(msg)) }

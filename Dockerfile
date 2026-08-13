@@ -1,12 +1,12 @@
-# ARK CODE Server — 生产部署镜像
+# ARK CODE Server — CloudBase Git 部署镜像
 # build context: 仓库根目录 (ark-guess/)
 FROM node:22-alpine
 
 WORKDIR /app
 
-# 1. 复制依赖清单并安装（含 prisma / tsx CLI）
+# 1. 复制依赖清单并安装（含 prisma / tsx CLI），用腾讯云 npm 镜像加速
 COPY server/package.json server/package-lock.json ./
-RUN npm install
+RUN npm config set registry https://mirrors.cloud.tencent.com/npm/ && npm install
 
 # 2. 复制源码与 Prisma
 COPY server/src ./src

@@ -24,8 +24,19 @@ interface OpData {
 }
 
 async function main() {
-  const jsonPath = resolve('..', 'src', 'data', 'operators.json')
-  const raw = readFileSync(jsonPath, 'utf-8')
+  // 多路径候选，兼容本地开发与 Docker 部署
+  const candidates = [
+    process.env.OPERATORS_JSON_PATH,
+    resolve('..', 'src', 'data', 'operators.json'), // 本地开发（相对 server/）
+    resolve('data', 'operators.json'),              // Docker 容器内
+  ].filter(Boolean) as string[]
+
+  let raw: string | null = null
+  for (const p of candidates) {
+    try { raw = readFileSync(p, 'utf-8'); break } catch { /* 继续尝试 */ }
+  }
+  if (!raw) throw new Error('找不到 operators.json，已尝试: ' + candidates.join(', '))
+
   const operators: OpData[] = JSON.parse(raw)
 
   console.log(`📦 读取 ${operators.length} 个干员，开始导入...`)

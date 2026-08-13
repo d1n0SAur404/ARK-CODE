@@ -5,8 +5,9 @@ FROM node:22-alpine
 WORKDIR /app
 
 # 1. 复制依赖清单并安装（含 prisma / tsx CLI），用腾讯云 npm 镜像加速
+# --ignore-scripts：跳过 postinstall 的 prisma generate（此时 schema 还没复制）
 COPY server/package.json server/package-lock.json ./
-RUN npm config set registry https://mirrors.cloud.tencent.com/npm/ && npm install
+RUN npm config set registry https://mirrors.cloud.tencent.com/npm/ && npm install --ignore-scripts
 
 # 2. 复制源码与 Prisma
 COPY server/src ./src

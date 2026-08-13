@@ -71,6 +71,15 @@ export function Header() {
             <span className="hidden sm:inline">每日挑战</span>
           </button>
 
+          {/* 公告 & 反馈 */}
+          <button
+            onClick={() => navigate('/feedback')}
+            className="flex items-center gap-1 rounded-lg border border-ark-border px-2 py-1.5 text-sm font-medium text-ark-text-secondary transition-all hover:border-ark-accent hover:text-ark-accent sm:px-3"
+          >
+            <span>📢</span>
+            <span className="hidden sm:inline">公告</span>
+          </button>
+
           {/* 积分 */}
           {isAuthed && user && (
             <div className="flex items-center gap-1 rounded-lg bg-ark-card px-2 py-1.5 text-sm sm:px-3">

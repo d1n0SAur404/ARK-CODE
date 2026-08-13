@@ -279,3 +279,34 @@ model ForumComment {
   @@index([postId])
   @@map("forum_comments")
 }
+
+// ============================================
+// BUG 反馈（仅管理员可见）
+// ============================================
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  username  String
+  content   String
+  status    String   @default("pending") // pending / resolved
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("feedbacks")
+}
+
+// ============================================
+// 更新公告
+// ============================================
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  isPinned  Boolean  @default(false) @map("is_pinned")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("announcements")
+}

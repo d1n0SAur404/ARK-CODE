@@ -47,6 +47,10 @@ export async function drawGuessWsRoutes(app: FastifyInstance) {
       let msg: any; try { msg = JSON.parse(raw.toString()) } catch { return }
       try {
         switch (msg.type) {
+          case 'ping': {
+            send(socket, { type: 'pong' })
+            break
+          }
           case 'dg:create': {
             const room: DrawRoom = { code: genCode(), hostId: session.userId, phase: 'lobby', players: [{ userId: session.userId, username: session.username, avatar: msg.avatar || '🎨', ready: true, score: 0 }], drawOrder: [], currentDrawerIdx: -1, currentTarget: null, selectionChoices: [], guesses: [], roundResults: [] }
             rooms.set(room.code, room)

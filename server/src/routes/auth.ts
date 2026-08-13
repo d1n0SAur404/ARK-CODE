@@ -76,6 +76,7 @@ export async function authRoutes(app: FastifyInstance) {
         avatar: user.avatar,
         bio: user.bio,
         gender: user.gender,
+        role: user.role,
       },
     })
   })
@@ -119,7 +120,7 @@ export async function authRoutes(app: FastifyInstance) {
 
     return reply.send({
       token,
-      user: { id: user.id, username: user.username, email: user.email, points: user.points, avatar: user.avatar, bio: user.bio, gender: user.gender },
+      user: { id: user.id, username: user.username, email: user.email, points: user.points, avatar: user.avatar, bio: user.bio, gender: user.gender, role: user.role },
     })
   })
 

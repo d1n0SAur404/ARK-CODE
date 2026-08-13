@@ -14,6 +14,7 @@ export interface UserProfile {
   avatar: string
   bio: string
   points: number
+  role?: string
 }
 
 export interface GameRecord {
@@ -163,6 +164,7 @@ export const useAuthStore = create<AuthState>()(
               avatar: data.user.avatar || '',
               bio: data.user.bio || '',
               points: data.user.points || 0,
+              role: data.user.role || 'USER',
             },
           })
           return true
@@ -184,6 +186,7 @@ export const useAuthStore = create<AuthState>()(
               avatar: data.user.avatar || '',
               bio: data.user.bio || '',
               points: data.user.points || 0,
+              role: data.user.role || 'USER',
             },
           })
           return true
@@ -210,6 +213,7 @@ export const useAuthStore = create<AuthState>()(
               avatar: data.user.avatar || '',
               bio: data.user.bio || '',
               points: data.user.points || 0,
+              role: data.user.role || 'USER',
             },
           })
           // 加载战绩和成就

@@ -42,11 +42,11 @@ export default function ProfilePage() {
       return
     }
     if (user) {
-      setUsername(user.username)
-      setEmail(user.email)
-      setGender(user.gender)
-      setAvatar(user.avatar)
-      setBio(user.bio)
+      setUsername(user.username || '')
+      setEmail(user.email || '')
+      setGender(user.gender || '')
+      setAvatar(user.avatar || '')
+      setBio(user.bio || '')
     }
   }, [isAuthed, user, navigate])
 

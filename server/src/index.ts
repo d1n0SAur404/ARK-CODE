@@ -15,6 +15,7 @@ import { statsRoutes } from './routes/stats.js'
 import { wsRoutes } from './routes/ws.js'
 import { drawGuessWsRoutes } from './routes/ws-draw.js'
 import { forumRoutes } from './routes/forum.js'
+import { feedbackRoutes } from './routes/feedback.js'
 import { errorHandler } from './middleware/error.js'
 import { registerSecurity } from './middleware/security.js'
 import { registerCache, initRedis } from './middleware/cache.js'
@@ -57,6 +58,7 @@ async function main() {
   await app.register(wsRoutes)
   await app.register(drawGuessWsRoutes)
   await app.register(forumRoutes, { prefix: '/api/forum' })
+  await app.register(feedbackRoutes, { prefix: '/api' })
 
   // 启动
   try {

@@ -9,6 +9,7 @@ import ForumPage from '@/pages/ForumPage'
 import ShopPage from '@/pages/ShopPage'
 import LeaderboardPage from '@/pages/LeaderboardPage'
 import MultiplayerRoomPage from '@/pages/MultiplayerRoomPage'
+import FeedbackPage from '@/pages/FeedbackPage'
 import { Header } from '@components/Header'
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/multiplayer" element={<MultiplayerRoomPage />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
         </Routes>
       </div>
     </BrowserRouter>
